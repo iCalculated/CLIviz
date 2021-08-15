@@ -14,23 +14,26 @@ def get_functions(module):
 def test():
     "Lets me mess around with Nubia"
     ctx = context.get_context()
-    print(dir(ctx))
-    ctx.funcs["func"] = "funky"
-    print(ctx.funcs)
+    print(ctx.sort)
+    print(ctx.sort_name)
 
 @command("find_sort")
 @argument("module_name", description="the module to get a sort from", positional=True)
 def find_sort(module_name):
     "Finds a sort function in a given module"
+    ctx = context.get_context()
+
     module = importlib.import_module("sorts." + module_name)
     funcs = get_functions(module)
     if len(funcs) != 1:
         raise SortModuleError("Too many functions in sort file! (Should be 1)")
-    return getattr(module, funcs[0])
+    ctx.sort = getattr(module, funcs[0])
+    ctx.sort_name = module_name
+
 
 class NubiaFunctionContext(context.Context):
     def __init__(self):
-        self.funcs = {}
+        self.sort = None
         super().__init__()
 
     def on_connected(self, *args, **kwargs):

@@ -1,5 +1,3 @@
-import heartrate; heartrate.trace(browser=False)
-
 def bubble_sort(collection):
     length = len(collection)
     for i in range(length - 1):

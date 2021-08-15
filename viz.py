@@ -1,8 +1,11 @@
-from sorts.bubble import bubble_sort
 import importlib
 import time
-import time
 import sys
+import os
+import cmd
+from nubia import Nubia, Options, command, context, argument, PluginInterface
+from nubia.internal.cmdbase import AutoCommand
+from termcolor import cprint
 
 def get_functions(module):
     return [f for f in dir(module) if not f.startswith("__")]
@@ -15,7 +18,11 @@ def find_sort(module):
 
 if __name__ == "__main__":
 
-    lib = input("File to get sort from: ")
+    cli = cmd.Cmd()
+
+    LIB_NAME = "bubble_sort"
+    lib = LIB_NAME if LIB_NAME else input("File to get sort from: ")
+
     sort_module = importlib.import_module("sorts." + lib)
     sort = find_sort(sort_module)
     

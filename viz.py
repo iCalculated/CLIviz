@@ -34,6 +34,8 @@ def find_sort(module_name):
 class NubiaFunctionContext(context.Context):
     def __init__(self):
         self.sort = None
+        self.sort_name = None
+        self.unsorted = list(range(100,0,-1))
         super().__init__()
 
     def on_connected(self, *args, **kwargs):
@@ -66,20 +68,9 @@ class Plugin(PluginInterface):
 if __name__ == "__main__":
 
     cli = cmd.Cmd()
-
-    #LIB_NAME = "bubble_sort"
-    #lib = LIB_NAME if LIB_NAME else input("File to get sort from: ")
-
-    #unsorted = list(range(100,0,-1))
-
-    #start = time.process_time()
-    #print(sort(unsorted), sep=",")
-    #print(f"Processing time: {time.process_time() - start}")
-
     plugin = Plugin()
     shell = Nubia(
             name="CLIviz",
-            #command_pkgs=commands,
             plugin=plugin,
             options=Options(persistent_history=False, 
                 auto_execute_single_suggestions=True)

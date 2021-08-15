@@ -17,9 +17,18 @@ def test():
     print(ctx.sort)
     print(ctx.sort_name)
 
+@command("sort")
+def sort():
+    "Visualizes the selected sort"
+    ctx = context.get_context()
+
+    to_sort = ctx.unsorted[:]
+    cprint(f"{to_sort} -> {ctx.sort(to_sort)}", "cyan")
+    cprint(f"\tvia {ctx.sort_name}", "yellow")
+
 @command("find_sort")
 @argument("module_name", description="the module to get a sort from", positional=True)
-def find_sort(module_name):
+def find_sort(module_name: str):
     "Finds a sort function in a given module"
     ctx = context.get_context()
 
@@ -35,7 +44,7 @@ class NubiaFunctionContext(context.Context):
     def __init__(self):
         self.sort = None
         self.sort_name = None
-        self.unsorted = list(range(100,0,-1))
+        self.unsorted = list(range(10,0,-1))
         super().__init__()
 
     def on_connected(self, *args, **kwargs):
@@ -63,6 +72,7 @@ class Plugin(PluginInterface):
         return [
             AutoCommand(test),
             AutoCommand(find_sort),
+            AutoCommand(sort),
         ]
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ from loguru import logger
 logger.add("out.log", backtrace=True, diagnose=True)  #
 
 source_code = """
-def bubble_sort(collection: str):
+def bubble_sort(collection: str, arb: int):
     length = len(collection)
     for i in range(length - 1):
         pass
@@ -28,19 +28,14 @@ class ParamFinder(ast.NodeVisitor):
         self.generic_visit(node)
         return l
 
-ParamFinder().visit(tree)
+#ParamFinder().visit(tree)
 
 
 def get_parameters(func_tree):
     for node in ast.walk(func_tree):
-        if isinstance(node, ast.FunctionDef):
-            pass
+        if isinstance(node, ast.arguments):
+            l = map(lambda x: (x.arg, x.annotation.id) if x.annotation else (x.arg, None), 
+                    node.args)
+    return l
 
-for node in ast.walk(tree):
-    if isinstance(node, ast.FunctionDef):
-        print(f"{get_fields(node)=}")
-        print(node.name)
-        print(get_fields(node.args))
-        print(get_fields(node.args.args))
-        print(get_fields(node.args.args[0]))
-        print(node.args.args[0].arg)
+print(list(get_parameters(tree)))

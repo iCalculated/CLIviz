@@ -10,6 +10,9 @@ from termcolor import cprint
 def get_functions(module):
     return [f for f in dir(module) if not f.startswith("__")]
 
+class SortModuleException(Exception):
+    pass
+
 @command("test")
 def test():
     "Lets me mess around with Nubia"
@@ -35,7 +38,7 @@ def find_sort(module_name: str):
     module = importlib.import_module("sorts." + module_name)
     funcs = get_functions(module)
     if len(funcs) != 1:
-        raise SortModuleError("Too many functions in sort file! (Should be 1)")
+        raise SortModuleException("Too many functions in sort file! (Should be 1)")
     ctx.sort = getattr(module, funcs[0])
     ctx.sort_name = module_name
 
@@ -60,7 +63,7 @@ class NubiaFunctionContext(context.Context):
         self.verbose = args.verbose
         ret = self._registry.find_command("connect").run_cli(args)
         if ret:
-            raise exceptions.CommandError("Failed starting interactive mode")
+            raise Exception.CommandError("Failed starting interactive mode")
         # dispatch the on connected message
         self.registry.dispatch_message(eventbus.Message.CONNECTED)
 

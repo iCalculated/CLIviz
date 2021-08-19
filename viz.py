@@ -6,17 +6,9 @@ source_code = """
 def bubble_sort(collection):
     length = len(collection)
     for i in range(length - 1):
-        swapped = False
-        for j in range(length - 1 - i):
-            if collection[j] > collection[j + 1]:
-                swapped = True
-                collection[j], collection[j + 1] = collection[j + 1], collection[j]
-        if not swapped:
-            break  
+        pass
+    print(length)
     return collection
 """
-ast.parse(source, mode="exec")
-
-explorer = ASTExplorer(source_code)
-for result in explorer.getVariables():
-    print(f"Found variable '{result.var}' with a value of '{result.expression}' (type: '{result.vType.__name__}')")
+tree = ast.dump(ast.parse(source_code, mode="exec"), indent=2)
+print(tree)

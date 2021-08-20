@@ -63,23 +63,27 @@ def bubble_sort(collection):
     return collection
 """
 tree = ast.parse(source_code, mode="exec")#, type_comments=True)
+print(dir(tree))
 
 with open("tree.ast","w") as f:
     f.write(ast.dump(tree, indent=4))
 
 
 lines = [None] + source_code.splitlines()  
-namespace = {}
+namespace = {"collection": [3,2,1]}
 
-for node in tree.body:
+for node in tree.body[0].body:
     wrapper = ast.Module(body=[node], type_ignores=[])
-    co = compile(wrapper, "<ast>", 'exec')
-    exec(co, namespace)
+    try: 
+        co = compile(wrapper, "<ast>", 'exec')
+        exec(co, namespace)
+        for key in namespace.keys():
+            if not key.startswith("__"):
+                print(f"{key}: {namespace[key]}", end=", ")
+        print()
+    except:
+        print("nah")
 
-    keys = ["collection", "length", "i", "swapped", "j"]
-    for key in keys:
-        print(f"{key: }{namespace[key]}", sep=", ")
-    print()
 
 """
 print(list(get_parameters(tree)))

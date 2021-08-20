@@ -2,24 +2,6 @@ import ast
 from loguru import logger
 logger.add("out.log", backtrace=True, diagnose=True)  #
 
-source_code = """
-def bubble_sort(collection):
-    length = len(collection)
-    for i in range(length - 1):
-        swapped = False
-        for j in range(length - 1 - i):
-            if collection[j] > collection[j + 1]:
-                swapped = True
-                collection[j], collection[j + 1] = collection[j + 1], collection[j]
-        if not swapped:
-            break  # Stop iteration if the collection is sorted.
-    return collection
-"""
-tree = ast.parse(source_code, mode="exec")
-with open("tree.ast","w") as f:
-    f.write(ast.dump(tree, indent=4))
-
-print()
 
 def get_fields(node):
     return [f for f in dir(node) if not f.startswith("__")]
@@ -29,7 +11,7 @@ class ParamFinder(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         l = map(lambda x: (x.arg, x.annotation.id) if x.annotation else (x.arg, None), node.args.args)
         self.generic_visit(node)
-        return lists(l)
+        return list(l)
 
 
 #ParamFinder().visit(tree)
@@ -66,9 +48,40 @@ def get_return(tree):
             elif isinstance(node.value, ast.Tuple):
                 return list(map(lambda x: x.id, node.value.elts))
 
+source_code = """
+def bubble_sort(collection):
+    length = len(collection)
+    for i in range(length - 1):
+        swapped = False
+        for j in range(length - 1 - i):
+            if collection[j] > collection[j + 1]:
+                swapped = True
+                collection[j], collection[j + 1] = collection[j + 1], collection[j]
+        if not swapped:
+            break  # Stop iteration if the collection is sorted.
+    return collection
+
+s = bubble_sort([3,2,1])
+"""
+tree = ast.parse(source_code, mode="exec")
+
+with open("tree.ast","w") as f:
+    f.write(ast.dump(tree, indent=4))
 print(list(get_parameters(tree)))
 print(get_return(tree))
 
 finder = AssignFinder()
 finder.visit(tree)
+ast.fix_missing_locations(tree)
 print(finder.assigns)
+
+
+lines = [None] + source_code.splitlines()  
+test_namespace = {}
+
+for node in tree.body:
+    wrapper = ast.Module(body=[node], type_ignores=[])
+    co = compile(wrapper, "<ast>", 'exec')
+    exec(co, test_namespace)
+
+print(test_namespace.keys())

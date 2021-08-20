@@ -48,6 +48,7 @@ def get_return(tree):
             elif isinstance(node.value, ast.Tuple):
                 return list(map(lambda x: x.id, node.value.elts))
 
+#collection = [3,2,1]
 source_code = """
 def bubble_sort(collection):
     length = len(collection)
@@ -60,13 +61,27 @@ def bubble_sort(collection):
         if not swapped:
             break  # Stop iteration if the collection is sorted.
     return collection
-
-s = bubble_sort([3,2,1])
 """
-tree = ast.parse(source_code, mode="exec")
+tree = ast.parse(source_code, mode="exec")#, type_comments=True)
 
 with open("tree.ast","w") as f:
     f.write(ast.dump(tree, indent=4))
+
+
+lines = [None] + source_code.splitlines()  
+namespace = {}
+
+for node in tree.body:
+    wrapper = ast.Module(body=[node], type_ignores=[])
+    co = compile(wrapper, "<ast>", 'exec')
+    exec(co, namespace)
+
+    keys = ["collection", "length", "i", "swapped", "j"]
+    for key in keys:
+        print(f"{key: }{namespace[key]}", sep=", ")
+    print()
+
+"""
 print(list(get_parameters(tree)))
 print(get_return(tree))
 
@@ -74,14 +89,4 @@ finder = AssignFinder()
 finder.visit(tree)
 ast.fix_missing_locations(tree)
 print(finder.assigns)
-
-
-lines = [None] + source_code.splitlines()  
-test_namespace = {}
-
-for node in tree.body:
-    wrapper = ast.Module(body=[node], type_ignores=[])
-    co = compile(wrapper, "<ast>", 'exec')
-    exec(co, test_namespace)
-
-print(test_namespace.keys())
+"""
